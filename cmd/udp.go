@@ -31,7 +31,6 @@ var udpCmd = &cobra.Command{
 		// goroutines (1)
 		go fmt.Println(Scan("localhost", "udp", depth, &wg))
 
-		wg.Wait()
 		fmt.Scanln()
 		fmt.Println("|| Scan Complete ||")
 	},

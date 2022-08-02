@@ -77,5 +77,6 @@ func Scan(hostname, protocol string, depth int, wg *sync.WaitGroup) []Log {
 
 	mutex.Unlock()
 	wg.Done()
+
 	return results
 }
