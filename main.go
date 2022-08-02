@@ -4,22 +4,33 @@ import (
 	"fmt"
 	"net"
 	"strconv"
+	"sync"
 	"time"
 )
 
-func main() {
-	fmt.Println("|| Beginning Scan ||")
-	fmt.Println(Scan("localhost"))
-	fmt.Println(WideScan("localhost"))
-}
+var (
+	wg    sync.WaitGroup
+	mutex sync.Mutex
+)
 
 type Log struct {
-	Port    string
-	State   string
-	Service string
+	Port  string
+	State string
 }
 
-func PortCheck(protocol, hostname string, port int) Log {
+func main() {
+	fmt.Println("|| Beginning Scan ||")
+	wg.Add(1)
+
+	// goroutines (1)
+	go fmt.Println(Scan("localhost", "tcp", 49152, &wg))
+
+	wg.Wait()
+	fmt.Scanln()
+	fmt.Println("|| Scan Complete ||")
+}
+
+func PortCheck(hostname, protocol string, port int) Log {
 	result := Log{Port: strconv.Itoa(port) + string("/") + protocol}
 	address := hostname + ":" + strconv.Itoa(port)
 	conn, err := net.DialTimeout(protocol, address, 60*time.Second)
@@ -30,37 +41,28 @@ func PortCheck(protocol, hostname string, port int) Log {
 		return result
 	}
 
-	defer conn.Close()
-
+	conn.Close()
 	result.State = "Open"
 
 	return result
 }
 
-func Scan(hostname string) []Log {
+func Scan(hostname, protocol string, depth int, wg *sync.WaitGroup) []Log {
 	var results []Log
+	mutex.Lock()
 
-	for i := 0; i <= 1024; i++ {
-		results = append(results, PortCheck("tcp", hostname, i))
+	for i := 0; i <= depth; i++ {
+		r := PortCheck(protocol, hostname, i)
+
+		switch r.State {
+		case "Open":
+			results = append(results, r)
+		default:
+			continue
+		}
 	}
 
-	for i := 0; i <= 1024; i++ {
-		results = append(results, PortCheck("udp", hostname, i))
-	}
-
-	return results
-}
-
-func WideScan(hostname string) []Log {
-	var results []Log
-
-	for i := 0; i <= 49152; i++ {
-		results = append(results, PortCheck("tcp", hostname, i))
-	}
-
-	for i := 0; i <= 49152; i++ {
-		results = append(results, PortCheck("udp", hostname, i))
-	}
-
+	mutex.Unlock()
+	wg.Done()
 	return results
 }
