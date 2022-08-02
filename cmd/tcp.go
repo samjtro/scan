@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"log"
 	"strconv"
-	"sync"
 
 	"github.com/spf13/cobra"
 )
@@ -18,7 +17,6 @@ var tcpCmd = &cobra.Command{
 	Short: "TCP Scan",
 	Long:  `Usage: scan tcp [depth: int]`,
 	Run: func(cmd *cobra.Command, args []string) {
-		var wg sync.WaitGroup
 		fmt.Println("|| Beginning Scan ||")
 		depth, err := strconv.Atoi(args[0])
 
@@ -26,13 +24,10 @@ var tcpCmd = &cobra.Command{
 			log.Fatalf("ERR: strconv.Atoi - %s", err.Error())
 		}
 
-		wg.Add(1)
-
 		// goroutines (1)
-		go fmt.Println(Scan("localhost", "tcp", depth, &wg))
+		go fmt.Println(Scan("localhost", "tcp", depth))
 
 		fmt.Println("|| Scan Complete ||")
-		fmt.Scanln()
 	},
 }
 

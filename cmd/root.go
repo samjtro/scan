@@ -60,7 +60,7 @@ func PortCheck(hostname, protocol string, port int) Log {
 	return result
 }
 
-func Scan(hostname, protocol string, depth int, wg *sync.WaitGroup) []Log {
+func Scan(hostname, protocol string, depth int) []Log {
 	var results []Log
 	mutex.Lock()
 
@@ -76,7 +76,6 @@ func Scan(hostname, protocol string, depth int, wg *sync.WaitGroup) []Log {
 	}
 
 	mutex.Unlock()
-	wg.Done()
 
 	return results
 }
