@@ -31,8 +31,8 @@ var tcpCmd = &cobra.Command{
 		// goroutines (1)
 		go fmt.Println(Scan("localhost", "tcp", depth, &wg))
 
-		fmt.Scanln()
 		fmt.Println("|| Scan Complete ||")
+		fmt.Scanln()
 	},
 }
 

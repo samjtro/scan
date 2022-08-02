@@ -14,9 +14,9 @@ import (
 )
 
 var udpCmd = &cobra.Command{
-	Use:   "tcp",
-	Short: "TCP Scan",
-	Long:  `Usage: scan tcp [depth: int]`,
+	Use:   "udp",
+	Short: "UDP Scan",
+	Long:  `Usage: scan udp [depth: int]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var wg sync.WaitGroup
 		fmt.Println("|| Beginning Scan ||")
